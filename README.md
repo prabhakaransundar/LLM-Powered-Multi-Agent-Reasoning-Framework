@@ -1,202 +1,324 @@
-# 🤖 LangGraph RAG Agent
+# 🤖 LLM-Powered Multi-Agent Reasoning Framework
 
-An agentic Retrieval-Augmented Generation (RAG) system built with **FastAPI** and **LangGraph**, featuring streaming responses, a **PostgreSQL + pgvector** vector store, and a modern **Streamlit** UI. The system supports user authentication, threaded conversations with persistent memory via LangGraph Postgres checkpointers, and tool-augmented reasoning (document retrieval + web search).
+> An AI-powered analytics assistant that allows users to explore datasets using natural language instead of writing SQL or Python manually.
 
-## 🚀 Features
+## Overview
 
-- **Agentic RAG with LangGraph**: ReAct-style agent with tools for document retrieval and web search
-- **Streaming responses end-to-end**: Real-time token streaming from backend to the Streamlit UI
-- **Threaded conversations**: Per-user threads with persistent histories stored via Postgres checkpointers
-- **PostgreSQL + pgvector**: Vector storage and semantic retrieval over user-uploaded documents
-- **Authentication and JWT**: Signup, login, refresh; per-user isolation for threads and docs
-- **Document ingestion**: PDF, DOCX, and TXT support with chunking and async indexing
-- **Tooling**: Built-in `retrieve_user_documents` and Tavily web search integration
-- **Async-first backend**: FastAPI + SQLAlchemy 2.0 async, production-ready logging and healthchecks
+**AI Data Analyst Agent** is an intelligent data analysis application designed to simplify the process of exploring structured datasets.
 
-## 💻 Tech Stack
+Users can upload a CSV or Excel file and ask questions such as:
 
-- **Backend**: FastAPI, LangGraph, LangChain, SQLAlchemy, Pydantic v2
-- **Vector Store**: PostgreSQL + pgvector (via `langchain-postgres`)
-- **Checkpointer**: LangGraph Postgres Checkpointer (async)
-- **Frontend**: Streamlit
-- **LLM/Embeddings**: OpenAI-compatible models (configurable base URLs)
+* "Which product generated the highest revenue?"
+* "Show me the monthly sales trend."
+* "What are the top 5 categories?"
+* "Are there any unusual values in the dataset?"
+* "Summarize the key business insights."
 
-## 📋 Prerequisites
+The system interprets the user's request, selects the appropriate analysis tool, executes the required operations, and returns an easy-to-understand response.
 
-- Python 3.12+
-- Docker and Docker Compose (recommended for Postgres + full stack)
+---
 
-## 📦 Quick Start (Docker Compose)
+## ⚡ What It Can Do
 
-1. Copy environment template and edit values:
-   ```bash
-   cp env.example .env
-   ```
-2. Start the full stack:
-   ```bash
-   docker compose up --build
-   ```
+### Natural Language Analysis
 
-Services:
-- Backend API: `http://localhost:8000/api/v1`
-- API Docs: `http://localhost:8000/api/v1/docs`
-- Frontend UI: `http://localhost:8501`
+Ask questions about your data without writing SQL or Python.
 
-Notes:
-- The `pgvector/pgvector:pg16` image includes the `vector` extension. If you use your own Postgres, ensure `CREATE EXTENSION IF NOT EXISTS vector;` is enabled.
+### Automated Data Exploration
 
-## 🧰 Local Development
+The agent can inspect:
 
-### 1) Backend (FastAPI)
+* Columns and data types
+* Missing values
+* Duplicate records
+* Statistical summaries
+* Relationships between variables
+
+### SQL & Python Analysis
+
+Depending on the query, the system can use SQL or Python-based analysis to retrieve and process information.
+
+### Visualization Generation
+
+Automatically generate charts for questions involving:
+
+* Trends
+* Comparisons
+* Distributions
+* Category performance
+* Correlations
+
+### AI-Powered Insights
+
+Instead of returning raw numbers, the agent converts analytical results into concise business insights.
+
+### Conversational Follow-ups
+
+Users can continue asking questions about the same dataset without restarting the analysis.
+
+---
+
+## 🧠 System Architecture
+
+```text
+                    User
+                     │
+                     ▼
+             Natural Language Query
+                     │
+                     ▼
+              ┌───────────────┐
+              │   AI Agent    │
+              └───────┬───────┘
+                      │
+          ┌───────────┼───────────┐
+          ▼           ▼           ▼
+       SQL Tool   Python Tool   Visualization
+          │           │           │
+          └───────────┼───────────┘
+                      ▼
+               Analysis Results
+                      │
+                      ▼
+               LLM Explanation
+                      │
+                      ▼
+                User Response
+```
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer            | Technology      |
+| ---------------- | --------------- |
+| Programming      | Python          |
+| AI / LLM         | OpenAI / Gemini |
+| Agent Framework  | LangGraph       |
+| Data Processing  | Pandas          |
+| Database         | PostgreSQL      |
+| Vector Search    | pgvector        |
+| API              | FastAPI         |
+| Visualization    | Plotly          |
+| UI               | Streamlit       |
+| Containerization | Docker          |
+
+---
+
+## 📁 Project Structure
+
+```text
+ai-data-analyst-agent/
+│
+├── app/
+│   ├── agents/
+│   │   ├── analyst.py
+│   │   └── planner.py
+│   │
+│   ├── tools/
+│   │   ├── sql_tool.py
+│   │   ├── python_tool.py
+│   │   └── visualization.py
+│   │
+│   ├── services/
+│   │   ├── data_loader.py
+│   │   └── insight_generator.py
+│   │
+│   ├── api/
+│   │   └── routes.py
+│   │
+│   └── config.py
+│
+├── data/
+│   └── sample_data.csv
+│
+├── notebooks/
+│   └── experimentation.ipynb
+│
+├── tests/
+│
+├── .env.example
+├── requirements.txt
+├── Dockerfile
+├── docker-compose.yml
+└── README.md
+```
+
+---
+
+## 🔄 How It Works
+
+### 1. Upload Dataset
+
+The user uploads a CSV or Excel dataset through the application.
+
+### 2. Dataset Profiling
+
+The system identifies:
+
+* Available columns
+* Data types
+* Missing values
+* Duplicate records
+* Basic statistics
+
+### 3. Query Understanding
+
+The LLM interprets the user's question and determines what type of analysis is required.
+
+### 4. Tool Selection
+
+The agent selects an appropriate tool:
+
+```text
+Business Question
+       ↓
+   AI Planner
+       ↓
+ ┌─────┴─────┐
+ ▼           ▼
+SQL       Python
+ │           │
+ └─────┬─────┘
+       ▼
+   Result
+```
+
+### 5. Result Validation
+
+The generated result is checked before being passed to the response generation layer.
+
+### 6. Insight Generation
+
+The LLM converts the analytical result into a concise explanation that a business user can understand.
+
+---
+
+## 💬 Example
+
+**User**
+
+> Which category generated the most revenue?
+
+**Agent**
+
+```text
+1. Identify revenue-related columns
+2. Calculate quantity × price
+3. Group revenue by category
+4. Sort categories by revenue
+5. Generate visualization
+6. Explain the result
+```
+
+**Response**
+
+> Electronics generated the highest revenue during the analyzed period, contributing approximately 34% of total sales.
+
+---
+
+## 🚀 Getting Started
+
+### Clone the repository
 
 ```bash
-cd backend
-python -m venv .venv
-.venv/Scripts/activate     # Windows
-# source .venv/bin/activate  # Linux/macOS
+git clone https://github.com/YOUR_USERNAME/ai-data-analyst-agent.git
+
+cd ai-data-analyst-agent
+```
+
+### Create a virtual environment
+
+```bash
+python -m venv venv
+```
+
+Activate it:
+
+**Windows**
+
+```bash
+venv\Scripts\activate
+```
+
+**macOS / Linux**
+
+```bash
+source venv/bin/activate
+```
+
+### Install dependencies
+
+```bash
 pip install -r requirements.txt
 ```
 
-Ensure a Postgres instance is running with pgvector. Example (Docker):
-```bash
-docker run --name langgraph_postgres -p 5432:5432 \
-  -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=test -e POSTGRES_DB=langgraph_db \
-  -d pgvector/pgvector:pg16
+### Configure environment variables
+
+Create a `.env` file:
+
+```env
+OPENAI_API_KEY=your_api_key
+DATABASE_URL=your_database_url
 ```
 
-Run the API:
-```bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000 --reload-dir ./app
-```
-
-### 2) Frontend (Streamlit)
+### Start the application
 
 ```bash
-cd frontend
-python -m venv .venv
-.venv/Scripts/activate     # Windows
-# source .venv/bin/activate  # Linux/macOS
-pip install -r requirements.txt
-streamlit run gui/main.py
+streamlit run app.py
 ```
 
-## 🔧 Environment Variables
+---
 
-Create a project-root `.env` (both backend and frontend read from it). Key settings:
+## 🔐 Security Considerations
 
-Core LLM settings:
-- `OPENAI_API_KEY`
-- `MODEL_PROVIDER` (e.g., `openai`)
-- `MODEL_NAMES` (JSON list, e.g., `["gpt-4o", "gpt-4o-mini"]`)
-- `MODEL_BASE_URL` (optional for OpenAI-compatible endpoints)
-- `EMBEDDINGS_MODEL_NAME` (e.g., `text-embedding-3-large`)
-- `EMBEDDINGS_BASE_URL` (optional)
-- `TAVILY_API_KEY` (for web search tool)
+The application should never expose API keys directly in the source code.
 
-Auth and tokens:
-- `TOKEN_BEARER_URL` (default `/api/v1/auth/login`)
-- `JWT_SECRET` (use a strong, random value)
-- `JWT_ALGORITHM` (e.g., `HS256`)
-- `ACCESS_TOKEN_EXPIRY_MINS` (e.g., `1440`)
-- `REFRESH_TOKEN_EXPIRY_DAYS` (e.g., `1`)
+Use environment variables for credentials and avoid committing `.env` files to the repository.
 
-Database and vector store:
-- `POSTGRES_HOST` (e.g., `127.0.0.1` or `postgres` in Docker)
-- `POSTGRES_PORT` (e.g., `5432`)
-- `POSTGRES_USER` (e.g., `postgres`)
-- `POSTGRES_PASSWORD` (e.g., `test`)
-- `POSTGRES_DATABASE` (e.g., `langgraph_db`)
-- `PGVECTOR_COLLECTION_NAME` (e.g., `my_collection`)
-
-Frontend:
-- `BACKEND_BASE_URL` (e.g., `http://127.0.0.1:8000/api/v1` when running locally)
-
-Example values are provided in `env.example`.
-
-## 🧩 API Overview
-
-Base URL: `/api/v1`
-
-Auth:
-- `POST /auth/signup`
-- `POST /auth/login`
-- `GET /auth/logout`
-- `GET /auth/refresh-token`
-
-Users:
-- `GET /users/me`
-- `PUT /users/user-profile/{user_id}`
-- `DELETE /users/user-profile/{user_id}`
-
-Threads:
-- `POST /threads/` (create)
-- `GET /threads/` (list)
-- `GET /threads/{thread_id}` (get)
-- `PATCH /threads/{thread_id}` (update title)
-- `DELETE /threads/{thread_id}` (delete + cascade cleanup of memory and vectors)
-
-Documents:
-- `GET /documents/{thread_id}` (list)
-- `POST /documents/upload/{thread_id}` (upload + async index)
-- `DELETE /documents/{document_id}` (remove + delete chunks from pgvector)
-
-Chat and streaming:
-- `POST /chat/` (public streaming chat; no tools or memory)
-- `POST /chat/{thread_id}` (authenticated streaming agent with tools + memory)
-- `GET /chat/{thread_id}` (retrieve persisted chat history)
-
-API docs:
-- Swagger UI: `http://localhost:8000/api/v1/docs`
-- ReDoc: `http://localhost:8000/api/v1/redoc`
-
-## 📡 Streaming Protocol
-
-Both chat endpoints stream newline-delimited JSON events. Event types include:
-- `llm_chunk`: incremental model output
-- `tool_call`: tool name and arguments when the agent invokes a tool
-- `tool_result`: tool output returned to the agent
-
-Example stream (JSON lines):
-
-```json
-{"type":"tool_call","name":"retrieve_user_documents","args":{"query":"policy overview"}}
-{"type":"tool_result","name":"retrieve_user_documents","content":"...retrieved text..."}
-{"type":"llm_chunk","content":"Here is a summary of your policy..."}
+```text
+.env
 ```
 
-## 🔄 Architecture
+should be included in `.gitignore`.
 
-1. Ingestion & Indexing
-   - PDF, DOCX, TXT loaders; chunking via `RecursiveCharacterTextSplitter`
-   - Async indexing into pgvector using `langchain-postgres` with JSONB metadata
+GitHub also recommends using repository security features such as secret scanning and push protection for public repositories.
 
-2. Retrieval
-   - Semantic similarity search filtered by `thread_id` and `user_id`
-   - Tool: `retrieve_user_documents` leverages the vector store retriever
+---
 
-3. Agent & Generation
-   - LangGraph ReAct agent (`create_react_agent`) with tools (documents + Tavily)
-   - Configurable models via `MODEL_NAMES`
-   - End-to-end streaming
+## 📌 Future Improvements
 
-4. Memory
-   - LangGraph Postgres checkpointer (async) stores per-thread chat histories
-   - Thread deletion cleans up checkpointer state and related vector chunks
+* [ ] Multi-dataset conversations
+* [ ] Advanced chart recommendations
+* [ ] Automatic anomaly detection
+* [ ] Query history
+* [ ] User authentication
+* [ ] LLM response evaluation
+* [ ] Agent observability and tracing
+* [ ] Support for larger datasets
+* [ ] Deployment with Docker
+* [ ] Cloud deployment
 
-## 🖼️ Screenshots
+---
 
-### Unauthenticated Home Page
-![home](./screenshots/home.png)
+## 🎯 Project Objective
 
-### Authenticated Home Page
-![home-authenticated](./screenshots/home-authenticated.png)
+The goal of this project is to combine **Generative AI, Agentic Workflows, Data Analytics and Software Engineering** into a practical application capable of assisting users with real-world data analysis.
 
-## 📝 License
+---
 
-Licensed under the [MIT License](./LICENSE).
+## 👨‍💻 Author
 
-## 🤝 Contributing
+**Prabhakaran Sundar**
 
-Contributions are welcome! Please open an issue or submit a PR.
+AI Developer | Data Analyst
 
+Skills demonstrated:
 
+`Python` · `SQL` · `LLMs` · `LangGraph` · `RAG` · `Pandas` · `FastAPI` · `PostgreSQL` · `Plotly` · `Docker`
+
+---
+
+## 📄 License
+
+This project is intended for educational and portfolio purposes.
